@@ -11,7 +11,7 @@ const bancoDeDados = [
     {
         imgSrc:"image 1.png",
         alt:"Boné preto",
-        variedade:"Acessorios",
+        variedade:"Acessórios",
         nome:"Black Hat",
         descricao:"O gorro Next.js chegou! Esta beldade bordada tem um ajuste confortável que garante que...",
         preco: 100,
@@ -52,16 +52,27 @@ const bancoDeDados = [
         descricao:"Proteja-se dos elementos com esta jaqueta embalável Champion. Esta jaqueta de poliést...",
         preco: 100,
         id:'6'
+    },
+    {
+        imgSrc:"tenis.png",
+        alt:"Tênis de corrida",
+        variedade:"Calçados",
+        nome:"Sport-Shoes",
+        descricao:"O par de tênis ideal para você que quer começar a levar uma vida de atleta. Com o Sport-Shoes ...",
+        preco: 135,
+        id: "7"
+        
     }
 ]
 let quantidade = 1
 let precoTotal = 0
 const produtosArr = []
+let novoBanco = []
 
 
 let carrinho = document.querySelector(".carrinho-vazio")
 carrinho.innerHTML = `<h2 class="dentroCarrinho">Carrinho vazio</h2> 
-<small>Adicione itens</small>`
+<small class = "small" >Adicione itens</small>`
 
 carrinho.addEventListener("click",function(item){
     console.log(item.target)
@@ -76,19 +87,52 @@ function createProductCard ({id,imgSrc,alt,variedade,nome,descricao,preco}){
     let cardProduct = document.createElement("div")
     cardProduct.id = id
     cardProduct.setAttribute("class","carta-produto")
-    cardProduct.innerHTML = `
-<figure>
-<img src="${imgSrc}" alt="${alt}">
-</figure>
-<figcaption>
-<small class="variedade">${variedade}</small>
-<h3 class="nomeProduto">${nome}</h3>
-<p>${descricao}</p>
-<p class="price">R$${preco},00</p>
-<small class="add">Adicionar ao carrinho</small>
-</figcaption>`
+
+    let figure = document.createElement("figure")
+    cardProduct.appendChild(figure)
+
+    let img = document.createElement("img")
+    img.src = imgSrc 
+    img.alt = alt
+   
+    figure.appendChild(img)
+
+    let figcaption = document.createElement("figcaption")
+    cardProduct.appendChild(figcaption)
+
+    let small = document.createElement("small")
+    small.classList.add("variedade")
+    small.innerText = `${variedade}`
+    figcaption.appendChild(small)
+
+    let h3 = document.createElement("h3")
+    h3.classList.add("nomeProduto")
+    h3.innerText =`${nome}`
+    figcaption.appendChild(h3)
+
+    let p = document.createElement("p")
+    p.innerText = `${descricao}`
+    figcaption.appendChild(p)
+
+    let p2 = document.createElement("p")
+    p2.classList.add("price")
+    p2.innerText = `R$${preco},00`
+    figcaption.appendChild(p2)
+
+    let buttonAdd = document.createElement("small")
+    buttonAdd.classList.add("add")
+    buttonAdd.innerText = "Addicionar ao carrinho"
+    figcaption.appendChild(buttonAdd) 
+
 
     document.querySelector(".produtos").appendChild(cardProduct)   
+
+    buttonAdd.addEventListener("click",function(evt){
+        const idt = evt.target.parentElement.parentElement.id
+        const idBanco = bancoDeDados.filter(e => e.id == idt)
+        produtosArr.push(idBanco[0])
+        addProdutoS()
+    })
     
 }
 
@@ -97,20 +141,14 @@ function atualizaProdutos(){
     bancoDeDados.forEach((item) =>createProductCard(item))
 }
 
+
+
+function produtosFiltrados(){
+    novoBanco.forEach((item) =>createProductCard(item))
+}
+
 atualizaProdutos()
 
-
-const add = document.querySelectorAll(".add")
-
-
-for(let i = 0; i < add.length; i++){
-    add[i].addEventListener("click",function(evt){
-        const idt = evt.target.parentElement.parentElement.id
-        const idBanco = bancoDeDados.filter(e => e.id == idt)
-        produtosArr.push(idBanco[0])
-        addProdutoS()
-    })
-}
 
 
 function addProdutoS(){
@@ -127,7 +165,7 @@ function addProdutoS(){
     <div class="descricaoCarrinho">
         <h3 class="nomeCarrinho">${item.nome}</h3>
         <p class="price-carrinho">R$${item.preco},00</p>
-        <p id="${index}" class="remove">Remover produto</p>
+        <p id="${index}" class="remove"> Remover produto </p>
     </div>
     </figure>`
 
@@ -144,51 +182,67 @@ function addProdutoS(){
         document.querySelector(".Compras").appendChild(total)}
         else{
             carrinho.innerHTML = `<h2 class="dentroCarrinho">Carrinho vazio</h2> 
-<small>Adicione itens</small>`
+<small class = "small" >Adicione itens</small>`
         }
 
     
 }
 
 
-function addProduto({imgSrc,alt,nome,preco}){
+   let itemMenu = document.querySelectorAll("a")
+
+
+   for( let i=0; i<itemMenu.length; i++){
+       itemMenu[i].addEventListener("click", function(e){
+        e.preventDefault()
+        document.querySelector(".produtos").innerHTML = ""
+        console.log(e.target.innerText)   
+        if(e.target.innerText == "Todos"){
+            atualizaProdutos()
+        }
+        novoBanco = bancoDeDados.filter( obj => obj.variedade == e.target.innerText)
+        produtosFiltrados()
+
+
+
+       })
+       
+
+   }
+
+  const newBanco = []
+
+  function search(texto){
     
+      
+      document.querySelector(".produtos").innerHTML = ""
 
-    let cardCompras = document.createElement("div")
-    cardCompras.setAttribute("class","card-compras")
-    cardCompras.innerHTML = ` <figure class="figCarrinho">
-    <div class="fundoImg">
-        <img class="produto-carrinho" src="${imgSrc}" alt=${alt}>
-    </div>   
-    <div class="descricaoCarrinho">
-        <h3 class="nomeCarrinho">${nome}</h3>
-        <p class="price-carrinho">R$${preco},00</p>
-        <p class="remove">Remover produto</p>
-    </div>
-    </figure>`
-
-    document.querySelector(".carrinho-vazio").appendChild(cardCompras)    
+    for(let i = 0; i < bancoDeDados.length; i++){
     
-    if( quantidade == 1){
-    total = document.createElement("div")
-    total.innerHTML = `
-    <div class="total">
-    <p class="quantidade">Quantidade: <small>${quantidade}</small></p>
-    <p class="precoTotal">Total: <small>R$${preco},00</small></p>  
-    </div>`
-    document.querySelector(".Compras").appendChild(total)}
-
-  
-    precoTotal = precoTotal + preco
-    console.log(preco)
-
-    total.innerHTML =  `<div class="total">
-    <p class="quantidade">Quantidade: <small>${quantidade}</small></p>
-    <p class="precoTotal">Total: <small>R$${precoTotal},00</small></p>  
-    </div>`      
-        console.log(precoTotal)
-
-    
+        if((bancoDeDados[i].nome).toLowerCase().includes(texto)){
+            newBanco.push(bancoDeDados[i])
+           
     }
+    console.log(newBanco)
+  }
+  newBanco.forEach((item) =>createProductCard(item))
+  newBanco.pop()
+  console.log(newBanco)
+
+
+}
+
+
+let inputp = document.querySelector(".pesquisando")
+
+let pesquisar = document.querySelector(".search")
+pesquisar.addEventListener("click", function(e) {
+    let texto = inputp.value
+    e.preventDefault()
+    search(texto)
     
 
+})
+
+let remove = document.querySelectorAll(".remove")
+console.log(remove)
